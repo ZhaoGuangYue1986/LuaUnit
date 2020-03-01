@@ -26,22 +26,45 @@ function Error:show()
     print(self._l_err_msg_)
 end
 ------------------------class for Test Assert-----------------
-Assert = { _l_assert_need_trace_ = false }
-function Assert:equal(expect, actual)
-    if expect ~= nil and actual ~= nil and type(expect) == type(actual)
-            and expect == actual then
-    else
-        local errMsg = "       Value not equal.Expect:" .. expect .. ",Actual:" .. actual;
-        if self._l_assert_need_trace_ then
-            errMsg = errMsg .. "\n" .. debug.traceback()
-        end
-        Error:new(errMsg, debug.traceback()):throw()
-    end
-
+---
+---
+local function isEq(expect, actual)
+    return expect ~= nil and actual ~= nil and type(expect) == type(actual)
+            and expect == actual
 end
+
+local function getNotEqMsg(expect, actual, needTrace)
+    local errMsg = "       Value not equal. Expect:" .. tostring(expect) .. ", Actual:" .. tostring(actual);
+    if needTrace then
+        errMsg = errMsg .. "\n" .. debug.traceback()
+    end
+    return errMsg
+end
+
+Assert = { _l_assert_need_trace_ = false }
+
+function Assert:equal(expect, actual)
+    if not isEq(expect, actual) then
+        Error:new(getNotEqMsg(expect, actual, self._l_assert_need_trace_)):throw()
+    end
+end
+
+function Assert:isTrue(isTrue)
+    if isTrue == false then
+        Error:new(getNotEqMsg(true, isTrue, self._l_assert_need_trace_)):throw()
+    end
+end
+
+function Assert:isFalse(isFalse)
+    if isFalse == true then
+        Error:new(getNotEqMsg(false, isFalse, self._l_assert_need_trace_)):throw()
+    end
+end
+
 function Assert:needTrace(isNeedTrace)
     self._l_assert_need_trace_ = isNeedTrace;
 end
+
 ------------------------class for Test Result-----------------
 local TestResult = {}
 function TestResult:new(testClassName)
@@ -154,12 +177,10 @@ end
 function LuaUnit:runTestCase()
     for key, val in pairs(self) do
         if string.find(key, "test") then
-            local methodName = self._l_unit_class_name_ .. "." .. key .. "()";
-            local methodInst = load(methodName)
-            local function err_handler(e)
+            local isSucc, errMsg = xpcall(val, function(e)
                 return Error:new(e, debug.traceback())
-            end
-            local isSucc, errMsg = xpcall(methodInst, err_handler)
+            end)
+
             if (not isSucc or errMsg ~= nil) then
                 self:recordTestCaseResult(key, false, errMsg)
             else

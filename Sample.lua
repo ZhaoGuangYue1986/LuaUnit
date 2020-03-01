@@ -12,13 +12,13 @@ local LuaUnit = require("LuaUnit")
 
 -----2.从luaUnit派生出我们自己的测试类
 -----2.Derive an instance of ourselves from luaUnit）
-TestUnit = LuaUnit:derive("TestUnit")
+local TestUnit = LuaUnit:derive("TestUnit")
 
 -----3.如果需要测试前准备的话，可以重新setUp方法,此方法将在所有用例前调用
 -----3.Third override setUp function if needed, this function will be called before all test case run
 function TestUnit:setUp()
     ----You can use needTrace function to open lua debug trace
-    Assert:needTrace(true)
+    Assert:needTrace(false)
     print("Test Unit set up func")
 end
 
@@ -46,6 +46,16 @@ end
 
 function TestUnit:testFo()
     Assert:equal(1, foo())
+end
+
+function TestUnit:testAssertIsTrue()
+    Assert:isTrue(true)
+  --  Assert:isTrue(false)
+end
+
+function TestUnit:testAssertIsFalse()
+    Assert:isFalse(false)
+    --Assert:isFalse(true)
 end
 
 -----6.执行所有用例

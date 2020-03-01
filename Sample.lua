@@ -14,15 +14,15 @@ local LuaUnit = require("LuaUnit")
 -----2.Derive an instance of ourselves from luaUnit）
 local TestUnit = LuaUnit:derive("TestUnit")
 
------3.如果需要测试前准备的话，可以重新setUp方法,此方法将在所有用例前调用
------3.Third override setUp function if needed, this function will be called before all test case run
+-----3.如果需要测试前准备的话，可以重写setUp方法,此方法将在所有用例前调用
+-----3.Third override setUp function if needed, this function will be called before test case run
 function TestUnit:setUp()
     ----You can use needTrace function to open lua debug trace
     Assert:needTrace(false)
     print("Test Unit set up func")
 end
 
------4.如果需要测试前准备的话，可以重新tearDown方法,此方法将在所有用例运行完以后调用
+-----4.如果需要测试前准备的话，可以重写tearDown方法,此方法将在所有用例运行完以后调用
 -----4.Third override tearDown function if needed, this function will called after all test case run
 function TestUnit:tearDown()
     ----You can use needTrace function to open lua debug trace

@@ -176,7 +176,7 @@ end
 
 function LuaUnit:runTestCase()
     for key, val in pairs(self) do
-        if string.find(key, "test") then
+        if string.sub(key,1,4) == 'test'  then
             local isSucc, errMsg = xpcall(val, function(e)
                 return Error:new(e)
             end)

@@ -15,3 +15,4 @@ Should require Log first, then use the return val's function, same time we provi
 请参考Sample.lua
 
 please see Sample.lua
+

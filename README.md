@@ -1,8 +1,8 @@
 # LuaUnit
-一个超简单的LUA 单元测试（UT）框架
 
-A very simple LUA UT test framwork
+一个使用起来超方便的LUA 单元测试（UT）框架
 
+A very simple and Easy use LUA UT test framwork
 
 
 ## 使用方法（How to use）

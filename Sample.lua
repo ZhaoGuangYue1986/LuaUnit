@@ -15,23 +15,41 @@ local LuaUnit = require("LuaUnit")
 local TestUnit = LuaUnit:derive("TestUnit")
 
 -----3.如果需要测试前准备的话，可以重写setUp方法,此方法将在所有用例前调用
------3.Third override setUp function if needed, this function will be called before test case run
+-----3.override setUp function if needed, this function will be called before test case run
 function TestUnit:setUp()
     ----You can use needTrace function to open lua debug trace
     Assert:needTrace(false)
-    print("Test Unit set up func")
+    print("This function will be called BEFORE ALL test run,you can define you own setUp funtion")
 end
 
 -----4.如果需要测试前准备的话，可以重写tearDown方法,此方法将在所有用例运行完以后调用
------4.Third override tearDown function if needed, this function will called after all test case run
+-----4. override tearDown function if needed, this function will called after all test case run
 function TestUnit:tearDown()
     ----You can use needTrace function to open lua debug trace
     Assert:needTrace(false)
-    print("Test Unit set up func")
+    print("This function will be called AFTER ALL test run,you can define you own tearDown funtion")
 end
 
------5.设计我们的用例,要求：所有用例必须以test开头
------5.design our test cases，notes:all test case should start with "test"
+-----5.如果需要测试前准备的话，可以重写caseSetUp方法,此方法将每个用例运行前调用
+-----5.Third override tearDown function if needed, this function will called before each test case run
+function TestUnit:caseSetUp()
+    print("This function will be called BEFORE EACH test run,you can define you own setUp funtion")
+end
+
+-----6.如果需要测试前准备的话，可以重写caseSetUp方法,此方法将每个用例运行前调用
+-----6.Third override tearDown function if needed, this function will called before each test case run
+function TestUnit:caseTearDown()
+    print("This function will be called AFTER EACH test run,you can define you own caseTearDown funtion")
+end
+
+-----7.设计我们的用例,要求：所有用例必须以test开头
+-----7.design our test cases，notes:all test case should start with "test"
+
+-- Need Test function
+local function foo()
+    return 2
+end
+
 function TestUnit:testNotEqual()
     Assert:equal(1, 2)
 end
@@ -40,17 +58,13 @@ function TestUnit:testEqual2()
     Assert:equal(1, 1)
 end
 
-local function foo()
-    return 2
-end
-
 function TestUnit:testFo()
     Assert:equal(1, foo())
 end
 
 function TestUnit:testAssertIsTrue()
     Assert:isTrue(true)
-  --  Assert:isTrue(false)
+    --  Assert:isTrue(false)
 end
 
 function TestUnit:testAssertIsFalse()
@@ -58,6 +72,6 @@ function TestUnit:testAssertIsFalse()
     --Assert:isFalse(true)
 end
 
------6.执行所有用例
------6.run this test class
+-----8.执行所有用例
+-----8.run this test class
 TestUnit:run()

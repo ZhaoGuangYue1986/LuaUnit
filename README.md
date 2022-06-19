@@ -17,3 +17,7 @@ Should require Log first, then use the return val's function, same time we provi
 
 please see Sample.lua
 
+# 相關倉庫
+https://github.com/ostack/LuaUnit
+https://github.com/ostack/LuaLogger
+https://github.com/ostack/LuaMock

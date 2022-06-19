@@ -69,12 +69,12 @@ end
 local TestResult = {}
 function TestResult:new(testClassName)
     local testResult = { _l_unit_case_result_ = {},
-                         _l_total_case_num_ = 0,
-                         _l_succ_case_num_ = 0,
-                         _l_unit_class_name_ = testClassName or "TestClassNotKnown",
-                         new = self.new,
-                         record = self.record,
-                         display = self. display
+                        _l_total_case_num_ = 0,
+                        _l_succ_case_num_ = 0,
+                        _l_unit_class_name_ = testClassName or "TestClassNotKnown",
+                        new = self.new,
+                        record = self.record,
+                        display = self. display
     }
     setmetatable(testResult, self)
     self.__index = self
@@ -145,7 +145,7 @@ end
 local LuaUnit = {}
 function LuaUnit:derive(classNames)
     local luaUnit = { _l_unit_class_name_ = classNames,
-                      run = run
+                    run = run
     }
     setmetatable(luaUnit, LuaUnit)
     self.__index = self;
@@ -174,36 +174,24 @@ function LuaUnit:runSetUp()
     end
 end
 
-function LuaUnit:runCaseSetUp()
-    if self:isFunction(self.caseSetUp) then
-        self:caseSetUp()
-    end
-end
-
 function LuaUnit:runTestCase()
     for key, val in pairs(self) do
         if string.sub(key,1,4) == 'test'  then
-            self:runCaseSetUp();
-            local isSucc, errMsg = xpcall(val, function(e)
-                return Error:new(e)
-            end)
-
-            if (not isSucc or errMsg ~= nil) then
-                self:recordTestCaseResult(key, false, errMsg)
-            else
-                self:recordTestCaseResult(key, true, nil)
+            ---call caseSetUp if user have
+            local isSucc, errMsg = self:safeCallFunc(self.caseSetUp)
+            ---call test case
+            if(isSucc and errMsg == nil) then
+                isSucc, errMsg = self:safeCallFunc(val)
             end
-            self:runCaseTearDown();
+            ---call casetearDown if user have
+            if(isSucc and errMsg == nil) then
+                isSucc, errMsg = self:safeCallFunc(self.caseTearDown)
+            end
+
+            self:recordTestCaseResult(key, isSucc, errMsg)
         end
         end
     end
-
-function LuaUnit:runCaseTearDown()
-    if self:isFunction(self.caseTearDown) then
-        self:caseTearDown()
-    end
-end
-
 
 function LuaUnit:runTearDown()
     if self:isFunction(self.tearDown) then
@@ -214,6 +202,17 @@ end
 function LuaUnit:isFunction(key)
     return key ~= nil and type(key) == 'function'
 end
+
+function LuaUnit:safeCallFunc(func)
+    if(func~=nil and self:isFunction(func))then
+        local isSucc, errMsg = xpcall(func, function(e)
+            return Error:new(e)
+        end)
+        return isSucc,errMsg
+    end
+    return true;
+end
+
 
 function LuaUnit:recordTestCaseResult(testCaseName, isSucc, error)
     self._l_unit_result_:record(testCaseName, isSucc, error)

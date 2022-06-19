@@ -174,9 +174,16 @@ function LuaUnit:runSetUp()
     end
 end
 
+function LuaUnit:runCaseSetUp()
+    if self:isFunction(self.caseSetUp) then
+        self:caseSetUp()
+    end
+end
+
 function LuaUnit:runTestCase()
     for key, val in pairs(self) do
         if string.sub(key,1,4) == 'test'  then
+            self:runCaseSetUp();
             local isSucc, errMsg = xpcall(val, function(e)
                 return Error:new(e)
             end)
@@ -186,10 +193,17 @@ function LuaUnit:runTestCase()
             else
                 self:recordTestCaseResult(key, true, nil)
             end
-
+            self:runCaseTearDown();
+        end
         end
     end
+
+function LuaUnit:runCaseTearDown()
+    if self:isFunction(self.caseTearDown) then
+        self:caseTearDown()
+    end
 end
+
 
 function LuaUnit:runTearDown()
     if self:isFunction(self.tearDown) then

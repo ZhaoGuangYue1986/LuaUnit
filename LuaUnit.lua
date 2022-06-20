@@ -28,9 +28,49 @@ end
 ------------------------class for Test Assert-----------------
 ---
 ---
+
+local function isTableContains(tab, element)
+    if tab ~= nil and 'table' == type(tab) then
+        for key, val in pairs(tab) do
+            if type(val) == type(element) then
+                if isEq(element, val) then
+                    return true
+                end
+            end
+        end
+        return true
+    end
+    return false
+end
+
+local function isTableEq(expect, actual)
+    if expect ~= nil and actual ~= nil then
+        if 'table' == type(expect) and 'table' == type(actual) and #expect == #actual then
+            for key, val in pairs(expect) do
+                if not isTableContains(actual, val) then
+                    return false
+                end
+            end
+            return true
+        end
+    end
+    return false;
+end
+
+-- local function isEq(expect, actual)
+--     return expect ~= nil and actual ~= nil and type(expect) == type(actual)
+--             and expect == actual
+-- end
+
 local function isEq(expect, actual)
-    return expect ~= nil and actual ~= nil and type(expect) == type(actual)
-            and expect == actual
+    if expect ~= nil and actual ~= nil then
+        if 'table' == type(expect) then
+            return isTableEq(expect, actual)
+        else
+            return expect == actual
+        end
+    end
+    return false
 end
 
 local function getNotEqMsg(expect, actual, needTrace)
